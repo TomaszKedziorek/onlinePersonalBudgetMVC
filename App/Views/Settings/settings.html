@@ -1,0 +1,385 @@
+{% extends 'base.html' %}
+
+{% block title %}Settings{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/css/settings.css">
+{% endblock %}
+
+{% block footer %}
+<script src="/js/settings.js"></script>
+{% endblock %}
+
+{% block body %}
+<main>
+  <section class="container border rounded-3 mt-5 mb-3">
+    <div class="d-flex fs-1 justify-content-center">
+      <span class="tytul">Settings</span>
+    </div>
+    {% for message in flash_messages %}
+    <div class="row text-center mt-3">
+      <span class="fs-5 text-{{ message.type }}">{{ message.body }}</span>
+    </div>
+    {% endfor %}
+
+    <div class="container p-0 my-3 ">
+      <!-- TAB NAV---------------------------------- -->
+      <ul class="nav nav-tabs px-2" id="myTab" role="tablist">
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link px-2 px-sm-4 {% if not isActive or isActive == 'incomeCategory' %} active {% endif %}"
+            id="income-categories-tab" data-bs-toggle="tab" data-bs-target="#income-categories" type="button" role="tab"
+            aria-controls="income-categories" aria-selected="true">Income categories</button>
+        </li>
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link px-2 px-sm-4  {% if isActive == 'expenseCategory' %} active {% endif %}"
+            id="expense-categories-tab" data-bs-toggle="tab" data-bs-target="#expense-categories" type="button"
+            role="tab" aria-controls="expense-categories" aria-selected="false">Expense categories</button>
+        </li>
+
+        <li class="nav-item" role="presentation">
+          <button class="nav-link px-2 px-sm-4  {% if isActive == 'paymentMethod' %} active {% endif %}"
+            id="payment-methods-tab" data-bs-toggle="tab" data-bs-target="#payment-methods" type="button" role="tab"
+            aria-controls="payment-methods" aria-selected="false">Payment methods</button>
+        </li>
+
+      </ul>
+      <!--TAB CONTENT---------------------------------- -->
+      <div class="tab-content container mt-2" id="myTabContent">
+        <div class="mb-2 fs-5"><span>Edit current categories</span></div>
+
+        <div class=" row  justify-content-between mx-md-3 mb-1">
+          <div class="col-6 col-md-4 p-0">
+            <span>Category name</span>
+          </div>
+          <div class="col-3 p-0">
+          </div>
+          <div class="col-2 p-0">
+            <span>Delete category</span>
+          </div>
+        </div>
+        <!--TAB INCOME CATEGORIES---------------------------------- -->
+
+        <div class="tab-pane fade {% if  not isActive or isActive == 'incomeCategory' %} show active {% endif %}"
+          id="income-categories" role="tabpanel" aria-labelledby="income-categories-tab">
+
+          {% for category in incomeCategories %}
+          <form action="/settings/settings/edit-income-category" name="category-{{ category.id }}" method="post">
+            <div class=" row  justify-content-between mx-md-3 mb-1">
+
+              <div class="col-6 col-md-4 p-0">
+                <input type="text" class="form-control nameCategory" placeholder="Category"
+                  aria-label="Category-{{ category.name }}" aria-describedby="basic-addon1" name="processedCategoryName"
+                  id="incomeCategory{{ category.id }}" value="{{ category.name }}" disabled>
+                {% if editedIncomeCategory and editedIncomeCategory.processedCategoryID == category.id%}
+                <span class="errorMesage text-danger px-0">{{ editedIncomeCategory.e_category }}</span>
+                {% endif %}
+                <input type="text" class="d-none" name="processedCategoryID" id="incomeCategory{{ category.id }}"
+                  value="{{ category.id }}" disabled>
+              </div>
+
+              <div class="col-3 p-0">
+                <button class="mx-1 edit" type="button" id="incomeCategory{{ category.id }}" {% if
+                  category.name=='Another' %} disabled {% endif %}>edit</button>
+                <button class="mx-1 save" type="submit" id="incomeCategory{{ category.id }}" disabled>save</button>
+              </div>
+
+              <div class="col-2 p-0">
+                <button class="delete" type="button" id="incomeCategory{{ category.id }}" disabled
+                  data-bs-toggle="modal" data-bs-target="#income-category-deleteModal-{{ category.id }}">delete</button>
+                <input type="radio" class="d-none" name="processedCategoryDelete"
+                  id="delete-incomeCategory{{ category.id }}" value="delete" disabled>
+              </div>
+
+            </div>
+
+            <!--INCOME CATEGORY Modal -->
+            <div class="modal fade rangeWindow" id="income-category-deleteModal-{{ category.id }}" tabindex="-1"
+              aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+
+                  <div class="modal-header">
+                    <span class="modal-title fs-3" id="deleteModalLabel">Delete category</span>
+                    <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                      aria-label="Close">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container p-0 mb-3 ">
+                      <p class="fs-4">If you delete this category, your incomes will be transferred to the selected
+                        category.</p>
+
+                      <div class="col-6">
+                        <select class="form-select" id="income-cat" name="categoryTransfer">
+                          {% for cat in incomeCategories %}
+                          {% if cat.name == 'Another' %}
+                          <option value="{{ cat.name }}" selected>{{ cat.name }}</option>
+                          {% elseif cat.id == category.id %}
+                          <option value="{{ cat.name }}" disabled>{{ cat.name }}</option>
+                          {% else %}
+                          <option value="{{ cat.name }}">{{ cat.name }}</option>
+                          {% endif %}
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel</button>
+                      <button type="submit" class="buttonLink buttonRange deleteModal"
+                        id="incomeCategory{{ category.id }}">Delete</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!--  End INCOME CATEGORIES Modal -->
+          </form>
+          {% endfor %}
+
+          <!--ADD NEW INCOME CATEGORIES---------------------------------- -->
+          <hr class="mb-2">
+          <div class="mb-2 fs-5"><span>Add new income category</span></div>
+
+          <form action="/settings/settings/add-income-category" method="post">
+            <div class="row justify-content-between mx-md-3  mb-1">
+              <div class="col-6 col-md-4 p-0">
+                <input type="text" class="form-control" placeholder="Category" aria-label="Category-new"
+                  aria-describedby="basic-addon1" name="processedCategoryName"
+                  value="{{ newIncomeCategory.processedCategoryName }}">
+              </div>
+              <div class="col-3 p-0">
+                <button class="mx-1" type="submit" id="add">add</button>
+              </div>
+              <div class="col-2 p-0"></div>
+              {% if newIncomeCategory %}
+              <span class="errorMesage text-danger px-0">{{ newIncomeCategory.e_category }}</span>
+              {% endif %}
+            </div>
+          </form>
+
+        </div>
+        <!--END TAB INCOME CATEGORIES---------------------------------- -->
+
+
+        <!--TAB EXPENSE CATEGORIES---------------------------------- -->
+        <div class="tab-pane fade {% if isActive == 'expenseCategory' %} show active {% endif %}"
+          id="expense-categories" role="tabpanel" aria-labelledby="expense-categories-tab">
+
+          {% for category in expenseCategories %}
+          <form action="/settings/settings/edit-expense-category" name="category-{{ category.id }}" method="post">
+            <div class=" row  justify-content-between mx-md-3 mb-1">
+
+              <div class="col-6 col-md-4 p-0">
+                <input type="text" class="form-control nameCategory" placeholder="Category"
+                  aria-label="Category-{{ category.name }}" aria-describedby="basic-addon1" name="processedCategoryName"
+                  id="expenseCategory{{ category.id }}" value="{{ category.name }}" disabled>
+                {% if editedExpenseCategory and editedExpenseCategory.processedCategoryID == category.id%}
+                <span class="errorMesage text-danger px-0">{{ editedExpenseCategory.e_category }}</span>
+                {% endif %}
+                <input type="text" class="d-none" name="processedCategoryID" id="expenseCategory{{ category.id }}"
+                  value="{{ category.id }}" disabled>
+              </div>
+
+              <div class="col-3 p-0">
+                <button class="mx-1 edit" type="button" id="expenseCategory{{ category.id }}" {% if
+                  category.name=='Another' %} disabled {% endif %}>edit</button>
+                <button class="mx-1 save" type="submit" id="expenseCategory{{ category.id }}" disabled>save</button>
+              </div>
+
+              <div class="col-2 p-0">
+                <button class="delete" type="button" id="expenseCategory{{ category.id }}" disabled
+                  data-bs-toggle="modal"
+                  data-bs-target="#expense-category-deleteModal-{{ category.id }}">delete</button>
+                <input type="radio" class="d-none" name="processedCategoryDelete"
+                  id="delete-expenseCategory{{ category.id }}" value="delete" disabled>
+              </div>
+
+            </div>
+
+            <!--EXPENSE CATEGORY Modal -->
+            <div class="modal fade rangeWindow" id="expense-category-deleteModal-{{ category.id }}" tabindex="-1"
+              aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+
+                  <div class="modal-header">
+                    <span class="modal-title fs-3" id="deleteModalLabel">Delete category</span>
+                    <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                      aria-label="Close">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container p-0 mb-3 ">
+                      <p class="fs-4">If you delete this category, your expense will be transferred to the selected
+                        category.</p>
+
+                      <div class="col-6">
+                        <select class="form-select" id="expense-cat" name="categoryTransfer">
+                          {% for cat in expenseCategories %}
+                          {% if cat.name == 'Another' %}
+                          <option value="{{ cat.name }}" selected>{{ cat.name }}</option>
+                          {% elseif cat.id == category.id %}
+                          <option value="{{ cat.name }}" disabled>{{ cat.name }}</option>
+                          {% else %}
+                          <option value="{{ cat.name }}">{{ cat.name }}</option>
+                          {% endif %}
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel</button>
+                      <button type="submit" class="buttonLink buttonRange deleteModal"
+                        id="expenseCategory{{ category.id }}">Delete</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!--  End EXPENSE CATEGORIES Modal -->
+          </form>
+          {% endfor %}
+
+          <!--ADD NEW EXPENSE CATEGORIES---------------------------------- -->
+          <hr class="mb-2">
+          <div class="mb-2 fs-5"><span>Add new expense category</span></div>
+
+          <form action="/settings/settings/add-expense-category" method="post">
+            <div class="row justify-content-between mx-md-3  mb-1">
+              <div class="col-6 col-md-4 p-0">
+                <input type="text" class="form-control" placeholder="Category" aria-label="Category-new"
+                  aria-describedby="basic-addon1" name="processedCategoryName"
+                  value="{{ newExpenseCategory.processedCategoryName }}">
+              </div>
+              <div class="col-3 p-0">
+                <button class="mx-1" type="submit" id="add">add</button>
+              </div>
+              <div class="col-2 p-0"></div>
+              {% if newExpenseCategory %}
+              <span class="errorMesage text-danger px-0">{{ newExpenseCategory.e_category }}</span>
+              {% endif %}
+            </div>
+          </form>
+
+        </div>
+        <!--END TAB EXPENSE CATEGORIES---------------------------------- -->
+
+
+        <!--TAB PAYMENT CATEGORIES---------------------------------- -->
+        <div class="tab-pane fade {% if isActive == 'paymentMethod' %} show active {% endif %}" id="payment-methods"
+          role="tabpanel" aria-labelledby="payment-methods-tab">
+
+          {% for category in paymentMethods %}
+          <form action="/settings/settings/edit-payment-category" name="category-{{ category.id }}" method="post">
+            <div class=" row  justify-content-between mx-md-3 mb-1">
+
+              <div class="col-6 col-md-4 p-0">
+                <input type="text" class="form-control nameCategory" placeholder="Category"
+                  aria-label="Category-{{ category.name }}" aria-describedby="basic-addon1" name="processedCategoryName"
+                  id="paymentCategory{{ category.id }}" value="{{ category.name }}" disabled>
+                {% if editedPaymentCategory and editedPaymentCategory.processedCategoryID == category.id%}
+                <span class="errorMesage text-danger px-0">{{ editedPaymentCategory.e_category }}</span>
+                {% endif %}
+                <input type="text" class="d-none" name="processedCategoryID" id="paymentCategory{{ category.id }}"
+                  value="{{ category.id }}" disabled>
+              </div>
+
+              <div class="col-3 p-0">
+                <button class="mx-1 edit" type="button" id="paymentCategory{{ category.id }}" {% if
+                  category.name=='Cash' %} disabled {% endif %}>edit</button>
+                <button class="mx-1 save" type="submit" id="paymentCategory{{ category.id }}" disabled>save</button>
+              </div>
+
+              <div class="col-2 p-0">
+                <button class="delete" type="button" id="paymentCategory{{ category.id }}" disabled
+                  data-bs-toggle="modal"
+                  data-bs-target="#payment-category-deleteModal-{{ category.id }}">delete</button>
+                <input type="radio" class="d-none" name="processedCategoryDelete"
+                  id="delete-paymentCategory{{ category.id }}" value="delete" disabled>
+              </div>
+
+            </div>
+
+            <!--PAYMENT CATEGORY Modal -->
+            <div class="modal fade rangeWindow" id="payment-category-deleteModal-{{ category.id }}" tabindex="-1"
+              aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+
+                  <div class="modal-header">
+                    <span class="modal-title fs-3" id="deleteModalLabel">Delete category</span>
+                    <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                      aria-label="Close">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container p-0 mb-3 ">
+                      <p class="fs-4">If you delete this method, payment method in your expense will be changed to the
+                        selected method.</p>
+
+                      <div class="col-6">
+                        <select class="form-select" id="payment-cat" name="categoryTransfer">
+                          {% for cat in paymentMethods %}
+                          {% if cat.name == 'Cash' %}
+                          <option value="{{ cat.name }}" selected>{{ cat.name }}</option>
+                          {% elseif cat.id == category.id %}
+                          <option value="{{ cat.name }}" disabled>{{ cat.name }}</option>
+                          {% else %}
+                          <option value="{{ cat.name }}">{{ cat.name }}</option>
+                          {% endif %}
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel</button>
+                      <button type="submit" class="buttonLink buttonRange deleteModal"
+                        id="paymentCategory{{ category.id }}">Delete</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!--  End PAYMENT CATEGORIES Modal -->
+          </form>
+          {% endfor %}
+
+          <!--ADD NEW PAYMENT CATEGORIES---------------------------------- -->
+          <hr class="mb-2">
+          <div class="mb-2 fs-5"><span>Add new payment method</span></div>
+
+          <form action="/settings/settings/add-payment-category" method="post">
+            <div class="row justify-content-between mx-md-3  mb-1">
+              <div class="col-6 col-md-4 p-0">
+                <input type="text" class="form-control" placeholder="Category" aria-label="Category-new"
+                  aria-describedby="basic-addon1" name="processedCategoryName"
+                  value="{{ newPaymentCategory.processedCategoryName }}">
+              </div>
+              <div class="col-3 p-0">
+                <button class="mx-1" type="submit" id="add">add</button>
+              </div>
+              <div class="col-2 p-0"></div>
+              {% if newPaymentCategory %}
+              <span class="errorMesage text-danger px-0">{{ newPaymentCategory.e_category }}</span>
+              {% endif %}
+            </div>
+          </form>
+
+        </div>
+        <!--END TAB PAYMENT CATEGORIES---------------------------------- -->
+
+      </div>
+
+    </div>
+
+  </section>
+</main>
+{% endblock %}

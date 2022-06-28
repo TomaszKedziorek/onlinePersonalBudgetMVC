@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Income{% endblock %}
+
+{% block footer %}
+<script src="/js/setDateJS.js"></script>
+{% endblock %}
+
+{% block body %}
+<main>
+  <section class="container border rounded-3 mt-5 mb-3">
+    <div class="d-flex fs-1 justify-content-center">
+      <span class="tytul">Add Income</span>
+    </div>
+
+    <form class="fs-5 mt-sm-3" action="/add-income/add-income/addNewIncome" method="post" name="addincome" novalidate>
+
+      <div class="container p-0 mb-3 ">
+        <div class="row justify-content-evenly">
+          <div class="col-11 col-sm-5 mb-3">
+            <label for="amount">Amount:</label>
+            <input class="form-control" type="number" id="amount" name="amount" placeholder="0,00" step="0.01" min="0"
+              value="{{ newIncome.amount }}" required>
+            <span class="text-danger">{{ newIncome.e_amount }}</span>
+          </div>
+          <div class="col-11 col-sm-5 mb-3">
+            <label for="date">Date:</label>
+            <input class="form-control" type="date" id="date" name="date" value="{{ newIncome.date }}">
+            <span class="text-danger">{{ newIncome.e_date }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="container p-0 mb-3 ">
+        <div class="row justify-content-center align-content-sm-center">
+          <div class="col-10 col-sm-4">
+            <span>Category:</span>
+            <div class="form-check" id="category">
+              {% for category in incomesCategories %}
+              <div>
+                {% if not newIncome %}
+                <input class="form-check-input" type="radio" name="category" id="{{ category.id }}"
+                  value="{{ category.id }}" {% if category.name=='Another' %} checked {% endif %}>
+                <label class="form-check-label" for="{{ category.id }}">{{ category.name }}</label>
+                {% else %}
+                {% if category.id==newIncome.checked %}
+                <input class="form-check-input" type="radio" name="category" id="{{ category.id }}"
+                  value="{{ category.id }}" checked>
+                <label class="form-check-label" for="{{ category.id }}">{{ category.name }}</label>
+                {% else %}
+                <input class="form-check-input" type="radio" name="category" id="{{ category.id }}"
+                  value="{{ category.id }} ">
+                <label class="form-check-label" for="{{ category.id }}">{{ category.name }}</label>
+                {% endif %}
+                {% endif %}
+              </div>
+              {% endfor %}
+              <span class="text-danger fs-">{{ newIncome.e_category }}</span>
+            </div>
+          </div>
+          <div class="col-10 col-sm-6">
+            <div class="">
+              <label for="comment">Comment:</label>
+              <textarea class="form-control" id="comment" name="comment" rows="4"
+                placeholder="...">{{ newIncome.commentToShow }}</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="mb-3 d-flex justify-content-evenly" id="">
+        <button class="buttonLink" type="submit" value="addincome">Add</button>
+        <a class="buttonLink" href="/">Cancel</a>
+      </div>
+    </form>
+  </section>
+</main>
+{% endblock%}

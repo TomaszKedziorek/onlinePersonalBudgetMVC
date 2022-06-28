@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playball&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+  <link rel="stylesheet" href="/css/base_styles.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+  {%block head%}{%endblock%}
+</head>
+
+<body class="pt-5">
+  <nav class="navbar navbar-expand-md navbar-dark fixed-top py-0 border rounded-3" id="mainNav">
+    <div class="container-fluid">
+      <a class="navbar-brand fs-1 m-0 py-0 logo" href="/" id="logo">Online Personal Budget</a>
+      <button class="d-md-none buttonLink menu" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="">Menu</span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNavAltMarkup">
+        <div class="navbar-nav align-items-end boxxx">
+          {% if not dontShowHome %} <a class="nav-link buttonLink" href="/">Home</a>{% endif %}
+          {% if current_user %}
+          <a class="nav-link buttonLink" href="/add-income/add-income/new">Income</a>
+          <a class="nav-link buttonLink" href="/add-expense/add-expense/new">Expense</a>
+          <a class="nav-link buttonLink" href="/balance/balance/show">Balance</a>
+          <a class="nav-link buttonLink" href="/settings/settings/show">Settings</a>
+          <a class="nav-link buttonLink" href="/Logout">Logout</a>
+          {% else %}
+          <a class="nav-link buttonLink" href="/login">Log In</a>
+          <a class="nav-link buttonLink" href="/signup/new">Sign Up</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div class="container boxxx">
+    {% if not current_user%}
+    {% for message in flash_messages %}
+    <div class="row text-center mt-3">
+      <span class="fs-4 text-{{ message.type }}">{{ message.body }}</span>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% block body %}
+
+    {% endblock %}
+
+  </div>
+
+  <script src="/js/showHidePasswordEyeIcon.js"></script>
+  <script src="https://code.jquery.com/jquery-3.1.1.min.js"
+    integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8=" crossorigin="anonymous"></script>
+  <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.15.0/jquery.validate.min.js"></script>
+
+  <script>
+    $(document).ready(function () {
+      $("button.menu").on("click", function () {
+        $("#mainNav").toggleClass("navExpanded");
+      }),
+        $(".boxxx").not("a").on("click", function () {
+          $(".navbar-collapse").collapse("hide");
+          $("#mainNav").removeClass("navExpanded");
+        })
+    })
+  </script>
+
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.10.2/dist/umd/popper.min.js"
+    integrity="sha384-7+zCNj/IqJ95wo16oMtfsKbZ9ccEh31eOz1HGyDuCQ6wgnyJNSYdrPa03rtR1zdB"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js"
+    integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13"
+    crossorigin="anonymous"></script>
+
+  {% block footer %}
+  {% endblock %}
+</body>
+
+</html>

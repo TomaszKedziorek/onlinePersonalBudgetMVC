@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Forgot password{% endblock %}
+
+{% block body %}
+<main>
+  <section class="container-fluid mt-5">
+    <div class="row justify-content-evenly">
+      <div class="col-10 col-sm-8 col-md-7 col-lg-6 col-xl-6 border rounded-3">
+        <div class="text-center fs-1">
+          <span class="tytul">Failure!</span>
+        </div>
+        <form class="container-fluid p-0 p-sm-3" action="#nowhere">
+
+          <div class="text-center">
+            <span class="fs-4">Password reset link invalid or expired. </span>
+            <br>
+            <span class="fs-5">Please click <a href="/password/forgot">here</a> to request another one.</span>
+          </div>
+
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+{% endblock %}

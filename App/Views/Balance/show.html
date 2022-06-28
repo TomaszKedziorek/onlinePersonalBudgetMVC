@@ -1,0 +1,251 @@
+{% extends "base.html" %}
+
+{% block title %}Balance{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="/css/balance.css">
+{% endblock %}
+
+{% block footer %}
+<script src="/js/balance.js"></script>
+<script>
+  //check selected radio buttons
+  let checkedPeriod = "{{ balancePeriod.checkedDate }}";
+  const radioInputs = document.querySelectorAll('.radio-input');
+  radioInputs.forEach(function (element) {
+    if (element.getAttribute('id') == checkedPeriod) {
+      element.checked = true;
+    }
+  });
+</script>
+<!-- Script for charts -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="/js/balancecharts.js"></script>
+<script>
+  $(document).ready(function () {
+    const userIncomes = $('.incomes-container').data('user-incomes');
+    const userExpenses = $('.expenses-container').data('user-expenses');
+    const userTotal = $('.total-container').data('user-total');
+    const Total = [{ name: 'Incomes', amount: userTotal['totalIncomes'] }, { name: 'Expenses', amount: userTotal['totalExpenses'] }];
+    if (userTotal['totalIncomes'] == 0) {
+      $("#incomes-tab").addClass("disabled");
+    } else {
+      drawChart(userIncomes, 'incomesChart', 'Incomes');
+    }
+    if (userTotal['totalExpenses'] == 0) {
+      $("#expenses-tab").removeClass("active").addClass("disabled");
+    } else {
+      drawChart(userExpenses, 'expensesChart', 'Expenses');
+    }
+    if (userTotal['totalIncomes'] == 0 && userTotal['totalExpenses'] == 0) {
+      $(".chart").addClass("d-none");
+    } else {
+      drawChart(Total, 'totalChart', 'Total');
+    }
+  });
+</script>
+{% endblock %}
+
+{% block body %}
+<main>
+  <section class="container border rounded-3 mt-5 mb-3">
+    <div class="d-flex fs-1 justify-content-center">
+      <span class="tytul">View balance</span>
+    </div>
+    <form name="selectDateRange" id="selectDateRange" method="post" action="/balance/balance/show">
+
+      <div class="dropdown d-flex justify-content-end datedrop">
+        <button class="btn dropdown-toggle shadow-none border rounded-3" type="button" id="dropdownMenuButton2"
+          data-bs-toggle="dropdown" aria-expanded="false">
+          Date range
+        </button>
+
+        <div class="form-check dropdown-menu dropdown-menu-end rounded-3 ps-0 datedropContent">
+          <div>
+            <input class="form-check-input ms-2 me-1 radio-input" type="radio" name="dateCategory" id="currentMonth"
+              value="currentMonth" onClick="javascript: submitform('selectDateRange')">
+            <label class="form-check-label" for="currentMonth"> Current month</label>
+          </div>
+
+          <div>
+            <input class="form-check-input ms-2 me-1 radio-input" type="radio" name="dateCategory" id="previousMonth"
+              value="previousMonth" onClick="javascript: submitform('selectDateRange')">
+            <label class="form-check-label" for="previousMonth"> Previous month</label>
+          </div>
+
+          <div>
+            <input class="form-check-input ms-2 me-1 radio-input" type="radio" name="dateCategory" id="currentYear"
+              value="currentYear" onClick="javascript: submitform('selectDateRange')">
+            <label class="form-check-label" for="currentYear"> Current year</label>
+          </div>
+
+          <div>
+            <input class="form-check-input ms-2 me-1 radio-input" type="radio" name="dateCategory" id="customDate"
+              data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <label class="form-check-label" for="customDate"> Custom date</label>
+          </div>
+        </div>
+
+      </div>
+
+    </form>
+
+    <!-- Modal -->
+    <div class="modal fade rangeWindow" id="exampleModal" tabindex="-1" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <span class="modal-title" id="exampleModalLabel">Select a date range</span>
+            <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+              aria-label="Close">&times;</button>
+          </div>
+          <div class="modal-body">
+            <form class="fs-5 mt-sm-3" method="post" action="/balance/balance/show" name="date-range">
+              <div class="container p-0 mb-3 ">
+                <div class="row justify-content-evenly">
+                  <div class="col-5">
+                    <label for="datesince">Since:</label>
+                    <input class="form-control" type="date" id="datesince" name="datesince" value="">
+                  </div>
+                  <div class="col-5">
+                    <label for="datefor">For:</label>
+                    <input class="form-control" type="date" id="datefor" name="datefor" value="">
+                  </div>
+                </div>
+              </div>
+
+              <div class="modal-footer">
+                <input class="invisible" type="radio" name="customDate" value="customDate" checked>
+                <button type="submit" class="buttonLink buttonRange">Save</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {% if balancePeriod %}
+    <div class="d-flex fs-5 justify-content-center">
+      <span class="tytul"> {{ balancePeriod.since }} - {{ balancePeriod.for }}</span>
+    </div>
+    {% endif %}
+
+    {% if total %}
+    <div class="d-flex justify-content-center balance-message">
+      {% if total.totalBalance > 0 %}
+      <span class="text-green">
+        {% elseif total.totalBalance == 0 %}
+        <span class="text-primary">
+          {% else %} <span class="text-warning">
+            {% endif %}
+            Balance in the given period: {{ total.totalBalance |number_format(2, '.', ' ') }}</span>
+    </div>
+    {% endif %}
+
+    <section class="container">
+      <div class="row justify-content-center">
+        <div class="col-9">
+          <table class="table table-hover text-center">
+            <thead>
+              <tr class="mainhead">
+                <th colspan="2">Incomes</th>
+              </tr>
+              <tr>
+                <th class="subhead" scope="col" width="50%">Category</th>
+                <th class="subhead" scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for income in incomes %}
+              <tr>
+                <td>{{ income.name }}</td>
+                <td>{{ income.amount |number_format(2, '.', ' ')}}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+
+            <tfoot>
+              <tr>
+                <th scope="row">Total</th>
+                <td class="text-green">
+                  {{ total.totalIncomes |number_format(2, '.', ' ') }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="container">
+      <div class="row justify-content-center">
+        <div class="col-9">
+          <table class="table table-hover text-center">
+            <thead>
+              <tr class="mainhead">
+                <th colspan="2">Expenses</th>
+              </tr>
+              <tr>
+                <th class="subhead" scope="col" width="50%">Category</th>
+                <th class="subhead" scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for expense in expenses %}
+              <tr>
+                <td>{{ expense.name }}</td>
+                <td>{{ expense.amount |number_format(2, '.', ' ') }}</td>
+              </tr>
+              {% endfor %}
+            </tbody>
+            <tfoot>
+              <tr>
+                <th scope="row">Total</th>
+                <td class="text-warning">
+                  {{ total.totalExpenses |number_format(2, '.', ' ') }}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </div>
+    </section>
+
+  </section>
+
+</main>
+
+<section class="container border rounded-3 mt-5 mb-3 py-2 chart">
+  <ul class="nav nav-tabs px-2" id="myTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link px-2 px-sm-4" id="incomes-tab" data-bs-toggle="tab" data-bs-target="#incomes"
+        type="button" role="tab" aria-controls="incomes" aria-selected="true">Incomes</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link px-2 px-sm-4 active" id="expenses-tab" data-bs-toggle="tab" data-bs-target="#expenses"
+        type="button" role="tab" aria-controls="expenses" aria-selected="false">Expenses</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link px-2 px-sm-4" id="total-tab" data-bs-toggle="tab" data-bs-target="#total" type="button"
+        role="tab" aria-controls="total" aria-selected="false">Total</button>
+    </li>
+  </ul>
+
+  <div class="tab-content  d-flex justify-content-center" id="myTabContent">
+    <div class="tab-pane fade" id="incomes" role="tabpanel" aria-labelledby="home-tab">
+      <canvas id="incomesChart"></canvas>
+    </div>
+    <div class="tab-pane fade  show active" id="expenses" role="tabpanel" aria-labelledby="profile-tab">
+      <canvas id="expensesChart"></canvas>
+    </div>
+    <div class="tab-pane fade" id="total" role="tabpanel" aria-labelledby="contact-tab">
+      <canvas id="totalChart"></canvas>
+    </div>
+  </div>
+</section>
+
+<div id="incomes-container" class="incomes-container" data-user-incomes="{{incomes|json_encode()}}"></div>
+<div id="expenses-container" class="expenses-container" data-user-expenses="{{expenses|json_encode()}}"></div>
+<div id="total-container" class="total-container" data-user-total="{{total|json_encode()}}"></div>
+
+{% endblock %}

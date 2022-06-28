@@ -1,0 +1,43 @@
+{% block body %}
+<main>
+  <section class="container p-0 mt-4 mb-4">
+    <div class="py-2 d-flex flex-column align-items-evenly border rounded-3 g-3 menu">
+      <section class="row">
+        <div class="col text-center"><span class="fs-4 px-2 logo">Name: {{ current_user.name }}</span></div>
+        <div class="col text-center"><span class="fs-4 px-2 logo">email: {{ current_user.email }}</span></div>
+        {% if current_user%}
+        {% for message in flash_messages %}
+        <div class="row text-center">
+          <span class="fs-4 text-{{ message.type }}">{{ message.body }}</span>
+        </div>
+        {% endfor %}
+        {% endif %}
+      </section>
+    </div>
+  </section>
+
+  <section class="container p-0 mt-4 mb-3">
+    <div class="py-2 d-flex flex-column align-items-center border rounded-3 g-3 menu">
+      <div class="text-center fs-1">
+        <span class="tytul">Main menu</span>
+      </div>
+      <div>
+        <a class="menuLink" href="/add-income/add-income/new">Add income</a>
+      </div>
+      <div>
+        <a class="menuLink" href="/add-expense/add-expense/new">Add expense</a>
+      </div>
+      <div>
+        <a class="menuLink" href="/balance/balance/show">View balance</a>
+      </div>
+      <div>
+        <a class="menuLink" href="/settings/settings/show">Settings</a>
+      </div>
+      <div>
+        <a class="menuLink" href="/logout">Logout</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% endblock %}

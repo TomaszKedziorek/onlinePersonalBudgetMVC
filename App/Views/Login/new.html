@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block title %}Log in{% endblock %}
+
+{% block body %}
+<main>
+  <section class="container mt-5">
+    <div class="row justify-content-evenly">
+      <div class="col-10 col-sm-8 col-md-7 col-lg-6 col-xl-5 border rounded-3">
+        <div class="text-center fs-1">
+          <span class="tytul">Sign in!</span>
+        </div>
+
+        <form class="container-fluid p-0 p-sm-3" action="/login/create" method="post">
+          <div class="mb-1">
+            <label for="inputEmail">Email</label>
+            <input type="email" class="form-control" id="inputEmail" name="email"
+              value="{% if user %}{{ user.email }}{%else%}tomek.kedziorek@gmail.com{%endif%}">
+          </div>
+          <label for="inputPassword">Password</label>
+          <div class="input-group mb-1">
+            <input type="password" class="form-control" id="inputPassword" name="password"
+              value="{% if user %}{{ user.password }}{%else%}qwe123{%endif%}">
+            <span class="input-group-text bg-white border-0" id="basic-addon1"><i class="bi bi-eye-slash"
+                id="eyeIcon"></i></span>
+          </div>
+          <div class="checkbox">
+            <span>
+              <input type="checkbox" name="remember_me" {% if remember_me %} checked="checked" {% endif %} /> Remember
+              me</span>
+          </div>
+          <span><a href="/password/forgot">Forgot password?</a></span>
+
+          <div class="d-flex justify-content-center mt-3" id="register_button">
+            <button class="" type="submit">Log in</button>
+          </div>
+          <div class="d-flex justify-content-center my-1">
+            <span id="haveAccount"> Don’t have an account? <a href="/signup/new">Register</a></span>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+{% endblock %}

@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}Add Expense{% endblock %}
+
+{% block footer %}
+<script src="/js/setDateJS.js"></script>
+{% endblock %}
+{% block body %}
+<main>
+  <section class="container border rounded-3 mt-5 mb-3">
+    <div class="d-flex fs-1 justify-content-center">
+      <span class="tytul">Add Expense</span>
+    </div>
+
+    <form class="fs-5 mt-sm-3" action="/add-expense/add-expense/addNewExpense" method="post" name="addexpense"
+      novalidate>
+
+      <div class="container p-0 mb-3 ">
+        <div class="row justify-content-evenly">
+          <div class="col-11 col-sm-5 mb-3">
+            <label for="amount">Amount:</label>
+            <input class="form-control" type="number" id="amount" name="amount" placeholder="0,00" step="0.01" min="0"
+              value="{{ newExpense.amount }}">
+            <span class="text-danger fs-">{{ newExpense.e_amount }}</span>
+          </div>
+          <div class="col-11 col-sm-5 mb-3">
+            <label for="date">Date:</label>
+            <input class="form-control" type="date" id="date" name="date" value="{{ newExpense.date }}">
+            <span class="text-danger fs-">{{ newExpense.e_date }}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="container p-0 mb-3 ">
+        <div class="row justify-content-evenly align-content-sm-center">
+
+          <div class="col-10 col-sm-5 col-md-3">
+            <span>Payment method:</span>
+            <div class="form-check" id="method">
+              {% for paymentMethod in paymentMethods %}
+              <div>
+                {% if not newExpense %}
+                <input class="form-check-input" type="radio" name="paymentMethod" id="{{ paymentMethod.id }}"
+                  value="{{ paymentMethod.id }}" {% if paymentMethod.name=='Cash' %} checked {% endif %}>
+                <label class="form-check-label" for="{{ paymentMethod.id }}">{{ paymentMethod.name }}</label>
+                {% else %}
+                {% if paymentMethod.id==newExpense.checked %}
+                <input class="form-check-input" type="radio" name="paymentMethod" id="{{ paymentMethod.id }}"
+                  value="{{ paymentMethod.id }}" checked>
+                <label class="form-check-label" for="{{ paymentMethod.id }}">{{ paymentMethod.name }}</label>
+                {% else %}
+                <input class="form-check-input" type="radio" name="paymentMethod" id="{{ paymentMethod.id }}"
+                  value="{{ paymentMethod.id }} ">
+                <label class="form-check-label" for="{{ paymentMethod.id }}">{{ paymentMethod.name }}</label>
+                {% endif %}
+                {% endif %}
+              </div>
+              {% endfor %}
+              <span class="text-danger fs-">{{ newExpense.e_paymentMethod }}</span>
+            </div>
+          </div>
+
+          <div class="col-10 col-sm-5 col-md-3">
+            <div class="">
+              <label for="expens-cat">Category:</label>
+              <select class="form-select" id="expens-cat" name="category">
+                <option selected>Select category of expense</option>
+                {% for category in expenseCategories %}
+                {% if newExpense.selected==category.id %}
+                <option value="{{ category.id }}" selected>{{ category.name }}</option>
+                {% else %}
+                <option value="{{ category.id }}">{{ category.name }}</option>
+                {% endif %}
+                {% endfor %}
+              </select>
+              <span class="text-danger fs-">{{ newExpense.e_category }}</span>
+            </div>
+          </div>
+
+          <div class="col-10 col-md-4">
+            <div class="">
+              <label for="comment">Comment:</label>
+              <textarea class="form-control" id="comment" name="comment" rows="4"
+                placeholder="...">{{ newExpense.commentToShow }}</textarea>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="mb-3 d-flex justify-content-evenly" id="">
+        <button class="buttonLink" type="submit" value="addincome">Add</button>
+        <a class="buttonLink" href="/">Cancel</a>
+      </div>
+
+    </form>
+  </section>
+</main>
+{% endblock %}
