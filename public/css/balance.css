@@ -1,0 +1,128 @@
+.datedrop button {
+  background-color: transparent;
+  border: 1px solid white;
+  color: white;
+  transform: translateY(-100%);
+  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+
+.datedrop button:hover {
+  border-color: #0c66af;
+  color: white;
+  box-shadow: 0.0em 0.0em 0.5em 0.2em #0c66af !important;
+  cursor: pointer;
+}
+
+@media(max-width:576px) {
+  .datedrop button {
+    transform: none;
+  }
+}
+
+.datedrop .datedropContent {
+  background-color: transparent;
+  color: white;
+  background-color: #040d21;
+  border: 1px solid white;
+}
+
+.datedrop input:hover {
+  box-shadow: 0.0em 0.0em 0.6em 0.3em #0c66af;
+}
+
+/*modal*/
+.modal-content {
+  border: 1px solid white;
+  background: linear-gradient(#040d21, #1c3261);
+  font-size: 2rem;
+}
+
+.buttonRange {
+  background-color: transparent;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+table {
+  border-collapse: collapse;
+  border-radius: 0.3rem;
+  letter-spacing: 1px;
+  font-size: 1rem;
+}
+
+thead {
+  color: white;
+}
+
+.mainhead {
+  font-family: 'Playball', cursive;
+  font-size: 1.6rem;
+  letter-spacing: 2px;
+}
+
+.subhead {
+  background-color: #040d21 !important;
+  font-size: 1.1rem;
+  border-top: none;
+}
+
+tbody {
+  font-family: sans-serif;
+  color: white;
+}
+
+tbody tr:hover {
+  color: white;
+  background-color: #0c66af75;
+}
+
+tbody td {
+  color: white !important;
+}
+
+tfoot {
+  background-color: #040d21;
+  color: white;
+}
+
+.text-green {
+  color: #3cca20;
+}
+
+.balance-message {
+  font-size: 1.25rem;
+}
+
+@media(max-width:540px) {
+  .balance-message {
+    font-size: 1rem;
+  }
+}
+
+/* CSS used here will be applied after bootstrap.css */
+ul.nav-tabs>li {
+  float: right !important;
+}
+
+li>.nav-link {
+  color: white !important;
+  font-size: 1.2rem;
+}
+
+li>.nav-link.active {
+  /* color: white; */
+  background-color: transparent !important;
+  border-bottom-color: rgb(22, 41, 81) !important;
+}
+
+canvas {
+  width: 400px;
+  height: 300px;
+}
+
+@media(max-width:440px) {
+  canvas {
+    width: 300px;
+    height: 300px;
+  }
+}

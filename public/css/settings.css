@@ -1,0 +1,70 @@
+/*modal*/
+.modal-content {
+  border: 1px solid white;
+  background: linear-gradient(#040d21, #1c3261);
+  font-size: 2rem;
+}
+
+.buttonRange {
+  background-color: transparent;
+  font-size: 1.2rem;
+  font-weight: 500;
+}
+
+/* CSS used here will be applied after bootstrap.css */
+ul.nav-tabs>li {
+  float: right !important;
+}
+
+li>.nav-link {
+  color: white !important;
+  font-size: 1.2rem;
+}
+
+li>.nav-link.active {
+  background-color: transparent !important;
+  border-bottom-color: rgb(12, 26, 56) !important;
+}
+
+
+button.edit,
+.save,
+.delete,
+#add {
+  border: 1px solid white;
+  color: white;
+  border-radius: 0.3rem;
+  padding: 0.25rem 0.25rem;
+  text-decoration: none;
+  width: 3rem;
+  text-align: center;
+  transition: color 0.5s, border-color 0.2s, box-shadow 0.2s;
+  background: none;
+}
+
+button.edit:hover:enabled,
+.save:hover:enabled,
+.delete:hover:enabled,
+#add:hover:enabled {
+  border-color: #0c66af;
+  box-shadow: 0.0em 0.0em 0.5em 0.2em #0c66af;
+}
+
+button.edit:disabled,
+.save:disabled,
+.delete:disabled {
+  border-color: gray;
+  color: gray;
+}
+
+input.nameCategory {
+  transition: opacity 0.5s;
+}
+
+input.nameCategory:disabled {
+  opacity: 0.6;
+}
+
+span.errorMesage {
+  font-size: 1.2rem;
+}
