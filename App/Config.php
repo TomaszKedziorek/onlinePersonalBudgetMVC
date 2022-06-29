@@ -41,7 +41,6 @@ class Config
 
   //Secret key for hashing np ze strony https://randomkeygen.com/
   const SECRET_KEY = 'J8e22o1sR1FTD7QExPJjTEDJI56kCaiw';
-					  
-  //Secret key for hashing np ze strony https://randomkeygen.com/
+
   const EMAIL_ADDRESS = 'someemail@gmail.com';
 }
