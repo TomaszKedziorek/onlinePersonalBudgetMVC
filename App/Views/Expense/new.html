@@ -4,7 +4,7 @@
 
 {% block footer %}
 <script src="/js/setDateJS.js"></script>
-{% endblock %}
+<script src="/js/limit.js"></script>{% endblock %}
 {% block body %}
 <main>
   <section class="container border rounded-3 mt-5 mb-3">
@@ -12,10 +12,33 @@
       <span class="tytul">Add Expense</span>
     </div>
 
+    <section class="container border rounded-3 my-1 fs-5 d-none" id="limitSection">
+      <span>Limit for
+        <i><span id="span-limit-category"></span></i> in
+        <i><span id="span-limit-date"></span></i> is:
+        <i><span id="span-limit-amount" class="text-primary"></span></i>
+      </span>
+      <br>
+      <span>Already spent:
+        <i><span id="span-total-expenses"></span></i>
+      </span>
+
+      <span>Left:
+        <i><span id="span-left-spend"></span></i>
+      </span>
+      <br>
+      <span class="d-none" id="current-expense-text">Left with current expense:
+        <i><span class="" id="current-expense"></span></i>
+      </span>
+      <div class="d-flex justify-content-center">
+        <span id="exceeded-message" class="text-danger"></span>
+      </div>
+    </section>
+
     <form class="fs-5 mt-sm-3" action="/add-expense/add-expense/addNewExpense" method="post" name="addexpense"
       novalidate>
 
-      <div class="container p-0 mb-3 ">
+      <div class="container p-0 mb-3">
         <div class="row justify-content-evenly">
           <div class="col-11 col-sm-5 mb-3">
             <label for="amount">Amount:</label>
@@ -64,7 +87,7 @@
             <div class="">
               <label for="expens-cat">Category:</label>
               <select class="form-select" id="expens-cat" name="category">
-                <option selected>Select category of expense</option>
+                <option value="0" selected>Select category of expense</option>
                 {% for category in expenseCategories %}
                 {% if newExpense.selected==category.id %}
                 <option value="{{ category.id }}" selected>{{ category.name }}</option>

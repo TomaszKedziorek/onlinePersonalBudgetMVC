@@ -6,11 +6,11 @@
  * PHP version 7.0
  */
 
+use App\Controllers\AddExpense\AddExpense;
 //ini_set('session.cookie_lifetime', '864000'); //10 days in seconds
 
 // //Composer
 require dirname(__DIR__) . '/vendor/autoload.php';
-
 
 //Error and Exception handling
 error_reporting(E_ALL);
@@ -38,7 +38,10 @@ $router->add('add-income/{controller}/{action}', ['namespace' => 'AddIncome']);
 $router->add('add-expense/{controller}/{action}', ['namespace' => 'AddExpense']);
 $router->add('balance/{controller}/{action}', ['namespace' => 'Balance']);
 $router->add('settings/{controller}/{action}', ['namespace' => 'Settings']);
-
+//$router->add('profile', ['controller' => 'Profile', 'action' => 'show']);
+$router->add('api/limitAndExpenses/{id:[\d]+}', ['namespace' => 'AddExpense', 'controller' => 'AddExpense', 'action' => 'get-limit-and-expenses']);
+$router->add('api/limit/{id:[\d]+}', ['namespace' => 'AddExpense', 'controller' => 'AddExpense', 'action' => 'get-limit-and-expenses']);
+$router->add('api/limits/{id:[\d]+}', ['namespace' => 'AddExpense', 'controller' => 'AddExpense', 'action' => 'get-limits-for-category']);
 
 
 $router->add('{controller}/{action}');

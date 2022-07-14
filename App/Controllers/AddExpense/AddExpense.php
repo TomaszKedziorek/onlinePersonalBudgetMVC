@@ -44,4 +44,28 @@ class AddExpense extends Authenticated
       ]);
     }
   }
+
+  //get limit and expenses data for given date and category
+  public function getLimitAndExpensesAction()
+  {
+    $expenseCategoryID = $this->route_params['id'];
+    $limitData = new Expense($_GET);
+    $limitData->expenseCategoryID = $expenseCategoryID;
+    $limitData->getLimitAndExpenses();
+  }
+
+  //get limit for given category
+  public function getLimitsForCategoryAction()
+  {
+    $expenseCategoryID = $this->route_params['id'];
+    $limitData = new Expense();
+    $limitData->expenseCategoryID = $expenseCategoryID;
+    $limitData->getLimitsForCategory();
+  }
+
+  public static function getAllUserLimitsAction()
+  {
+    $limitData = new Expense();
+    $limitData->getAllUserLimits();
+  }
 }

@@ -14,13 +14,11 @@
         <form class="container-fluid p-0 p-sm-3" action="/login/create" method="post">
           <div class="mb-1">
             <label for="inputEmail">Email</label>
-            <input type="email" class="form-control" id="inputEmail" name="email"
-              value="{% if user %}{{ user.email }}{%else%}tomek.kedziorek@gmail.com{%endif%}">
+            <input type="email" class="form-control" id="inputEmail" name="email" value="{{ user.email }}">
           </div>
           <label for="inputPassword">Password</label>
           <div class="input-group mb-1">
-            <input type="password" class="form-control" id="inputPassword" name="password"
-              value="{% if user %}{{ user.password }}{%else%}qwe123{%endif%}">
+            <input type="password" class="form-control" id="inputPassword" name="password" value="{{ user.password }}">
             <span class="input-group-text bg-white border-0" id="basic-addon1"><i class="bi bi-eye-slash"
                 id="eyeIcon"></i></span>
           </div>

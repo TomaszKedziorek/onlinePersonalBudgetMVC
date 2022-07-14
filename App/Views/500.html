@@ -3,8 +3,26 @@
 {% block title %}Error{% endblock %}
 
 {% block body %}
+<main>
+  <section class="container-fluid mt-5">
+    <div class="row justify-content-evenly">
+      <div class="col-10 col-sm-8 col-md-7 col-lg-6 col-xl-6 border rounded-3">
+        <div class="text-center fs-1">
+          <h1>An error occurred</h1>
+        </div>
+        <form class="container-fluid p-0 p-sm-3" action="#nowhere">
 
-    <h1>An error occurred</h1>
-    <p>Sorry, an error has occurred.</p>
+          <div class="text-center">
+            <p>
+              Sorry, an error has occurred.
+              <br>
+              Back to <a href="/">home page</a>.
+            </p>
+          </div>
 
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
 {% endblock %}

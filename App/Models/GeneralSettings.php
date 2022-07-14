@@ -33,7 +33,7 @@ class GeneralSettings extends \Core\Model
       $this->asignedToUserCategoryID = 'payment_method_assigned_to_user_id';
     }
   }
-  //Validate new income category
+  //Validate new category
   public function vlidateCategoryName($user_id)
   {
     $correctData = true;
@@ -58,7 +58,7 @@ class GeneralSettings extends \Core\Model
     return $correctData;
   }
 
-  //Find income category by name
+  //Find category by name
   public function findCategoryByName($processedCategoryName, $user_id)
   {
     $tableName = $this->categoryAssignedToUsers;
@@ -72,7 +72,7 @@ class GeneralSettings extends \Core\Model
     return $stmt->fetch(PDO::FETCH_ASSOC);
   }
 
-  //Save new income category in database
+  //Save new category in database
   public function saveNewCategory($user_id)
   {
     if ($this->vlidateCategoryName($user_id)) {
@@ -88,7 +88,7 @@ class GeneralSettings extends \Core\Model
     return false;
   }
 
-  //Eddit income category
+  //Eddit category
   public function editCategoryName($user_id)
   {
     if ($this->vlidateCategoryName($user_id)) {
@@ -104,7 +104,7 @@ class GeneralSettings extends \Core\Model
     return false;
   }
 
-  //Delete income category and tranfer its income to Another
+  //Delete category and tranfer its  to Another
   //by change id
   public function deleteCategory($categoryTransfer, $user_id)
   {

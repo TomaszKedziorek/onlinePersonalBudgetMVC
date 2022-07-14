@@ -17,7 +17,8 @@ class Settings extends Authenticated
     View::renderTemplate('Settings/settings.html', [
       'incomeCategories' => Income::findUserIncomesCategories($_SESSION['user_id']),
       'expenseCategories' => Expense::findUserExpensesCategories($_SESSION['user_id']),
-      'paymentMethods' => Expense::findUserPaymentMethods($_SESSION['user_id'])
+      'paymentMethods' => Expense::findUserPaymentMethods($_SESSION['user_id']),
+      'userLimits' => Expense::getAllUserLimits()
     ]);
   }
 
@@ -28,6 +29,7 @@ class Settings extends Authenticated
       'incomeCategories' => Income::findUserIncomesCategories($_SESSION['user_id']),
       'expenseCategories' => Expense::findUserExpensesCategories($_SESSION['user_id']),
       'paymentMethods' => Expense::findUserPaymentMethods($_SESSION['user_id']),
+      'userLimits' => Expense::getAllUserLimits(),
       'isActive' => $this->whichIsActive,
       $twigSettingsObjectName => $settingsObject
     ]);
@@ -50,6 +52,7 @@ class Settings extends Authenticated
     //DELETE
     if (isset($settingsObject->processedCategoryDelete)) {
       if ($settingsObject->deleteCategory($settingsObject->categoryTransfer, $_SESSION['user_id'])) {
+        Expense::deleteLimitsForCategory($settingsObject->processedCategoryID);
         \App\Flash::addMessage("$startOfMesage deleted.", \App\Flash::SUCCESS);
         $this->redirect('/settings/settings/show');
       } else {
@@ -112,5 +115,74 @@ class Settings extends Authenticated
     $this->whichIsActive = "paymentMethod";
     $editedPaymentCategory = new GeneralSettings($_POST, $this->whichIsActive);
     $this->editCategory($editedPaymentCategory, 'editedPaymentCategory', 'Payment method');
+  }
+
+  //EDIT LIMIT
+  public function editLimit()
+  {
+    $editedLimit = new Expense($_POST);
+    //DELETE
+    if (isset($editedLimit->limitDelete)) {
+      if ($editedLimit->deleteLimit()) {
+        \App\Flash::addMessage("Limit deleted.", \App\Flash::SUCCESS);
+        $this->redirect('/settings/settings/show');
+      } else {
+        \App\Flash::addMessage("Limit has not been deleted.", \App\Flash::WARNING);
+        $this->redirect('/settings/settings/show');
+      }
+    } else { //EDIT
+      //If ther is already limit set with month you want to edit
+      if ($this->checkIfNotEdit($editedLimit)) {
+        \App\Flash::addMessage("Limit in given month is already set.", \App\Flash::WARNING);
+        $this->redirect('/settings/settings/show');
+      } elseif ($editedLimit->editLimit()) {
+        \App\Flash::addMessage("Limit edited successfully.", \App\Flash::SUCCESS);
+        $this->redirect('/settings/settings/show');
+      } else {
+        \App\Flash::addMessage("Limit edited unsuccessfully.", \App\Flash::WARNING);
+        $this->redirect('/settings/settings/show');
+      }
+    }
+  }
+  //ADD NEW LIMIT
+  public function addNewLimitAction()
+  {
+    $newLimit = new Expense($_POST);
+    if ($this->updateLimitIfIsSet($newLimit)) {
+      \App\Flash::addMessage("New limit has replaced the existing one on the given date.", \App\Flash::SUCCESS);
+      $this->redirect('/settings/settings/show');
+    } elseif ($newLimit->addNewLimit()) {
+      \App\Flash::addMessage("Limit has been added.", \App\Flash::SUCCESS);
+      $this->redirect('/settings/settings/show');
+    } else {
+      \App\Flash::addMessage("Limit has not been added.", \App\Flash::WARNING);
+      $this->redirect('/settings/settings/show');
+    }
+  }
+
+  //If limit in given date already exist update it with new data
+  public function updateLimitIfIsSet($newLimit)
+  {
+    $oldLimit = $newLimit->checkLimitInGivenDate();
+    if ($oldLimit) {
+      $newLimit->limit_id = $oldLimit['id'];
+      return $newLimit->editLimit();
+    } else {
+      return false;
+    }
+  }
+
+  //check if can edit existin limit with no date collisions
+  public function checkIfNotEdit($editedLimit)
+  {
+    $limit = $editedLimit;
+    $existingLimits = $editedLimit->checkLimitInGivenDate("edit");
+    if (count($existingLimits) == 0) {
+      return false;
+    } elseif (count($existingLimits) == 1 && $existingLimits[0]['id'] == $limit->limit_id) {
+      return false;
+    } else {
+      return true;
+    }
   }
 }

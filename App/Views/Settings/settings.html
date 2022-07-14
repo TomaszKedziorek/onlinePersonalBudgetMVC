@@ -27,15 +27,16 @@
       <ul class="nav nav-tabs px-2" id="myTab" role="tablist">
 
         <li class="nav-item" role="presentation">
-          <button class="nav-link px-2 px-sm-4 {% if not isActive or isActive == 'incomeCategory' %} active {% endif %}"
-            id="income-categories-tab" data-bs-toggle="tab" data-bs-target="#income-categories" type="button" role="tab"
-            aria-controls="income-categories" aria-selected="true">Income categories</button>
+          <button
+            class="nav-link px-2 px-sm-4  {% if not isActive or isActive == 'expenseCategory' %} active {% endif %}"
+            id="expense-categories-tab" data-bs-toggle="tab" data-bs-target="#expense-categories" type="button"
+            role="tab" aria-controls="expense-categories" aria-selected="false">Expense categories</button>
         </li>
 
         <li class="nav-item" role="presentation">
-          <button class="nav-link px-2 px-sm-4  {% if isActive == 'expenseCategory' %} active {% endif %}"
-            id="expense-categories-tab" data-bs-toggle="tab" data-bs-target="#expense-categories" type="button"
-            role="tab" aria-controls="expense-categories" aria-selected="false">Expense categories</button>
+          <button class="nav-link px-2 px-sm-4 {% if isActive == 'incomeCategory' %} active {% endif %}"
+            id="income-categories-tab" data-bs-toggle="tab" data-bs-target="#income-categories" type="button" role="tab"
+            aria-controls="income-categories" aria-selected="true">Income categories</button>
         </li>
 
         <li class="nav-item" role="presentation">
@@ -49,20 +50,240 @@
       <div class="tab-content container mt-2" id="myTabContent">
         <div class="mb-2 fs-5"><span>Edit current categories</span></div>
 
-        <div class=" row  justify-content-between mx-md-3 mb-1">
-          <div class="col-6 col-md-4 p-0">
+        <div class=" row justify-content-between mx-md-3 mb-1">
+          <div class="col-5 col-md-4 p-0">
             <span>Category name</span>
           </div>
           <div class="col-3 p-0">
           </div>
+          <div class="col-2 p-0" id="set-limit-label">
+            <span>Set limit</span>
+          </div>
           <div class="col-2 p-0">
-            <span>Delete category</span>
+            <span>Delete</span>
           </div>
         </div>
-        <!--TAB INCOME CATEGORIES---------------------------------- -->
 
-        <div class="tab-pane fade {% if  not isActive or isActive == 'incomeCategory' %} show active {% endif %}"
-          id="income-categories" role="tabpanel" aria-labelledby="income-categories-tab">
+
+        <!--TAB EXPENSE CATEGORIES---------------------------------- -->
+        <div class="tab-pane fade {% if not isActive or isActive == 'expenseCategory' %} show active {% endif %}"
+          id="expense-categories" role="tabpanel" aria-labelledby="expense-categories-tab">
+
+          {% for category in expenseCategories %}
+          <form action="/settings/settings/edit-expense-category" name="category-{{ category.id }}" method="post">
+            <div class=" row justify-content-between mx-md-3 mb-1">
+
+              <div class="col-5 col-md-4 p-0">
+                <input type="text" class="form-control nameCategory" placeholder="Category"
+                  aria-label="Category-{{ category.name }}" aria-describedby="basic-addon1" name="processedCategoryName"
+                  id="expenseCategory{{ category.id }}" value="{{ category.name }}" disabled>
+                {% if editedExpenseCategory and editedExpenseCategory.processedCategoryID == category.id%}
+                <span class="errorMesage text-danger px-0">{{ editedExpenseCategory.e_category }}</span>
+                {% endif %}
+                <input type="text" class="d-none" name="processedCategoryID" id="expenseCategory{{ category.id }}"
+                  value="{{ category.id }}" disabled>
+              </div>
+
+              <div class="col-3 p-0">
+                <button class="mx-1 edit" type="button" id="expenseCategory{{ category.id }}" {% if
+                  category.name=='Another' %} disabled {% endif %}>edit</button>
+                <button class="mx-1 save" type="submit" id="expenseCategory{{ category.id }}" disabled>save</button>
+              </div>
+
+              <div class="col-2 p-0">
+                <button class="mx-1 limit" type="button" id="expenseCategory{{ category.id }}" data-bs-toggle="modal"
+                  data-bs-target="#expense-category-limitModal-{{ category.id }}">limit</button>
+              </div>
+
+              <div class="col-2 p-0">
+                <button class="delete" type="button" id="expenseCategory{{ category.id }}" disabled
+                  data-bs-toggle="modal"
+                  data-bs-target="#expense-category-deleteModal-{{ category.id }}">delete</button>
+                <input type="radio" class="d-none" name="processedCategoryDelete"
+                  id="delete-expenseCategory{{ category.id }}" value="delete" disabled>
+              </div>
+
+            </div>
+
+            <!--EXPENSE CATEGORY Modal -->
+            <div class="modal fade rangeWindow" id="expense-category-deleteModal-{{ category.id }}" tabindex="-1"
+              aria-hidden="true">
+              <div class="modal-dialog">
+                <div class="modal-content">
+
+                  <div class="modal-header">
+                    <span class="modal-title fs-3" id="deleteModalLabel">Delete category</span>
+                    <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                      aria-label="Close">&times;</button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="container p-0 mb-3 ">
+                      <p class="fs-4">If you delete this category, your expense will be transferred to the selected
+                        category.</p>
+
+                      <div class="col-6">
+                        <select class="form-select" id="expense-cat" name="categoryTransfer">
+                          {% for cat in expenseCategories %}
+                          {% if cat.name == 'Another' %}
+                          <option value="{{ cat.name }}" selected>{{ cat.name }}</option>
+                          {% elseif cat.id == category.id %}
+                          <option value="{{ cat.name }}" disabled>{{ cat.name }}</option>
+                          {% else %}
+                          <option value="{{ cat.name }}">{{ cat.name }}</option>
+                          {% endif %}
+                          {% endfor %}
+                        </select>
+                      </div>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                        aria-label="Close">Cancel</button>
+                      <button type="submit" class="buttonLink buttonRange deleteModal"
+                        id="expenseCategory{{ category.id }}">Delete</button>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+            <!--  End EXPENSE CATEGORIES Modal -->
+          </form>
+
+          <!--EXPENSE LIMIT Modal -->
+          <div class="modal fade rangeWindow" id="expense-category-limitModal-{{ category.id }}" tabindex="-1"
+            aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+
+                <div class="modal-header">
+                  <span class="modal-title fs-3" id="limitModalLabel">Limit for {{ category.name }}</span>
+                  <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
+                    aria-label="Close">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                  <div class="container p-0 mb-3 ">
+                    <span class="fs-4">Limits</span>
+                    <div class="row justify-content-between mx-md-3 m-1 fs-5">
+                      <div class="col-3 p-0">
+                        <span>Date</span>
+                      </div>
+                      <div class="col-3 p-0">
+                        <span>Amount</span>
+                      </div>
+                      <div class="col-2 p-0">
+                        <span>Save</span>
+                      </div>
+                      <div class="col-2 p-0">
+                        <span>Delete</span>
+                      </div>
+                    </div>
+                    <hr class="my-0">
+                    {% for limit in userLimits %}
+                    {% if limit.category_id == category.id %}
+                    <form action="/settings/settings/edit-limit" method="post" name="limitForm-{{ limit.id }}">
+
+                      <div class="row justify-content-between m-1 fs-5">
+                        <div class="col-3 p-0">
+                          <input type="radio" class="d-none" name="limit_id" id="delete-limit-{{ limit.limit_id }}"
+                            value="{{ limit.limit_id }}" checked>
+                          <input type="radio" class="d-none" name="category_id" value="{{ category.id }}" checked>
+                          <input type="date" class="form-control" name="date_of_limit" value="{{ limit.date_of_limit }}"
+                            required>
+                        </div>
+                        <div class="col-3 p-0">
+                          <input type="number" step="0.01" min="0" class="form-control" name="limit_amount"
+                            value="{{ limit.limit }}" required>
+                        </div>
+                        <div class="col-2 p-0">
+                          <button class="saveLimit" type="submit" id="save-limit-{{ limit.limit_id }}">save</button>
+                        </div>
+                        <div class="col-2 p-0">
+                          <button class="deleteLimit" type="submit"
+                            id="delete-limit-{{ limit.limit_id }}">delete</button>
+                          <input type="radio" class="d-none" name="limitDelete" id="delete-limit-{{ limit.limit_id }}"
+                            value="delete" disabled>
+                        </div>
+                      </div>
+                    </form>
+                    {% endif %}
+                    {% endfor %}
+                  </div>
+                  <hr>
+                  <!-- ADD NEW LIMIT -->
+                  <div class="container p-0 mb-3 ">
+                    <form action="/settings/settings/add-new-limit" method="post"
+                      name="setNewLimitForm-{{ category.id }}">
+                      <span class="fs-4">Add new limit</span>
+                      <div class="row justify-content-between mx-md-3 m-1 fs-5">
+                        <div class="col-3 p-0"><span>Date</span></div>
+                        <div class="col-3 p-0"><span>Amount</span></div>
+                        <div class="col-4 p-0"></div>
+                      </div>
+
+                      <div class="row justify-content-between m-1 fs-5">
+                        <div class="col-3 p-0">
+                          <input type="radio" class="d-none" name="category_id" id="add-limit" value="{{ category.id }}"
+                            checked>
+                          <input type="date" class="form-control addLimitDate" name="date_of_limit" value="" required>
+                        </div>
+                        <div class="col-3 p-0">
+                          <input type="number" step="0.01" min="0" class="form-control" name="limit_amount"
+                            placeholder="0.00" value="" required>
+                        </div>
+                        <div class="col-4 p-0">
+                          <button class="addLimit" type="submit">add</button>
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                  <hr>
+                  <div class="">
+                    <span>The limit is set for the entire month.</span>
+                    <br>
+                    <span>If a limit has already been set in a given month, the new limit in that month will update
+                      it.</span>
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+          </div>
+          <!--  End EXPENSE LIMIT Modal -->
+
+          {% endfor %}
+
+          <!--ADD NEW EXPENSE CATEGORIES---------------------------------- -->
+          <hr class="mb-2">
+          <div class="mb-2 fs-5"><span>Add new expense category</span></div>
+
+          <form action="/settings/settings/add-expense-category" method="post">
+            <div class="row justify-content-between mx-md-3  mb-1">
+              <div class="col-6 col-md-4 p-0">
+                <input type="text" class="form-control" placeholder="Category" aria-label="Category-new"
+                  aria-describedby="basic-addon1" name="processedCategoryName"
+                  value="{{ newExpenseCategory.processedCategoryName }}">
+              </div>
+              <div class="col-3 p-0">
+                <button class="mx-1" type="submit" id="add">add</button>
+              </div>
+              <div class="col-2 p-0"></div>
+              {% if newExpenseCategory %}
+              <span class="errorMesage text-danger px-0">{{ newExpenseCategory.e_category }}</span>
+              {% endif %}
+            </div>
+          </form>
+
+        </div>
+        <!--END TAB EXPENSE CATEGORIES---------------------------------- -->
+
+
+        <!--TAB INCOME CATEGORIES---------------------------------- -->
+        <div class="tab-pane fade {% if isActive == 'incomeCategory' %} show active {% endif %}" id="income-categories"
+          role="tabpanel" aria-labelledby="income-categories-tab">
 
           {% for category in incomeCategories %}
           <form action="/settings/settings/edit-income-category" name="category-{{ category.id }}" method="post">
@@ -163,113 +384,6 @@
 
         </div>
         <!--END TAB INCOME CATEGORIES---------------------------------- -->
-
-
-        <!--TAB EXPENSE CATEGORIES---------------------------------- -->
-        <div class="tab-pane fade {% if isActive == 'expenseCategory' %} show active {% endif %}"
-          id="expense-categories" role="tabpanel" aria-labelledby="expense-categories-tab">
-
-          {% for category in expenseCategories %}
-          <form action="/settings/settings/edit-expense-category" name="category-{{ category.id }}" method="post">
-            <div class=" row  justify-content-between mx-md-3 mb-1">
-
-              <div class="col-6 col-md-4 p-0">
-                <input type="text" class="form-control nameCategory" placeholder="Category"
-                  aria-label="Category-{{ category.name }}" aria-describedby="basic-addon1" name="processedCategoryName"
-                  id="expenseCategory{{ category.id }}" value="{{ category.name }}" disabled>
-                {% if editedExpenseCategory and editedExpenseCategory.processedCategoryID == category.id%}
-                <span class="errorMesage text-danger px-0">{{ editedExpenseCategory.e_category }}</span>
-                {% endif %}
-                <input type="text" class="d-none" name="processedCategoryID" id="expenseCategory{{ category.id }}"
-                  value="{{ category.id }}" disabled>
-              </div>
-
-              <div class="col-3 p-0">
-                <button class="mx-1 edit" type="button" id="expenseCategory{{ category.id }}" {% if
-                  category.name=='Another' %} disabled {% endif %}>edit</button>
-                <button class="mx-1 save" type="submit" id="expenseCategory{{ category.id }}" disabled>save</button>
-              </div>
-
-              <div class="col-2 p-0">
-                <button class="delete" type="button" id="expenseCategory{{ category.id }}" disabled
-                  data-bs-toggle="modal"
-                  data-bs-target="#expense-category-deleteModal-{{ category.id }}">delete</button>
-                <input type="radio" class="d-none" name="processedCategoryDelete"
-                  id="delete-expenseCategory{{ category.id }}" value="delete" disabled>
-              </div>
-
-            </div>
-
-            <!--EXPENSE CATEGORY Modal -->
-            <div class="modal fade rangeWindow" id="expense-category-deleteModal-{{ category.id }}" tabindex="-1"
-              aria-hidden="true">
-              <div class="modal-dialog">
-                <div class="modal-content">
-
-                  <div class="modal-header">
-                    <span class="modal-title fs-3" id="deleteModalLabel">Delete category</span>
-                    <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
-                      aria-label="Close">&times;</button>
-                  </div>
-                  <div class="modal-body">
-                    <div class="container p-0 mb-3 ">
-                      <p class="fs-4">If you delete this category, your expense will be transferred to the selected
-                        category.</p>
-
-                      <div class="col-6">
-                        <select class="form-select" id="expense-cat" name="categoryTransfer">
-                          {% for cat in expenseCategories %}
-                          {% if cat.name == 'Another' %}
-                          <option value="{{ cat.name }}" selected>{{ cat.name }}</option>
-                          {% elseif cat.id == category.id %}
-                          <option value="{{ cat.name }}" disabled>{{ cat.name }}</option>
-                          {% else %}
-                          <option value="{{ cat.name }}">{{ cat.name }}</option>
-                          {% endif %}
-                          {% endfor %}
-                        </select>
-                      </div>
-
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="buttonLink buttonRange" data-bs-dismiss="modal"
-                        aria-label="Close">Cancel</button>
-                      <button type="submit" class="buttonLink buttonRange deleteModal"
-                        id="expenseCategory{{ category.id }}">Delete</button>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-            <!--  End EXPENSE CATEGORIES Modal -->
-          </form>
-          {% endfor %}
-
-          <!--ADD NEW EXPENSE CATEGORIES---------------------------------- -->
-          <hr class="mb-2">
-          <div class="mb-2 fs-5"><span>Add new expense category</span></div>
-
-          <form action="/settings/settings/add-expense-category" method="post">
-            <div class="row justify-content-between mx-md-3  mb-1">
-              <div class="col-6 col-md-4 p-0">
-                <input type="text" class="form-control" placeholder="Category" aria-label="Category-new"
-                  aria-describedby="basic-addon1" name="processedCategoryName"
-                  value="{{ newExpenseCategory.processedCategoryName }}">
-              </div>
-              <div class="col-3 p-0">
-                <button class="mx-1" type="submit" id="add">add</button>
-              </div>
-              <div class="col-2 p-0"></div>
-              {% if newExpenseCategory %}
-              <span class="errorMesage text-danger px-0">{{ newExpenseCategory.e_category }}</span>
-              {% endif %}
-            </div>
-          </form>
-
-        </div>
-        <!--END TAB EXPENSE CATEGORIES---------------------------------- -->
-
 
         <!--TAB PAYMENT CATEGORIES---------------------------------- -->
         <div class="tab-pane fade {% if isActive == 'paymentMethod' %} show active {% endif %}" id="payment-methods"

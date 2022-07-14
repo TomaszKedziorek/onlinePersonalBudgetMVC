@@ -1,5 +1,11 @@
-#RewriteEngine On
-#RewriteCond %{HTTPS} off [OR]
-#RewriteCond %{HTTP_HOST} ^www\. [NC]
-#RewriteRule ^ #https://budget.tomasz-kedziorek.profesjonalnyprogramista.pl%{REQUEST_URI} [L,NE,R=301]
+RewriteEngine On
+
+
+RewriteCond %{REQUEST_URI} !public/
+RewriteRule (.*) public/$1 
+
+RewriteCond %{HTTPS} off [OR]
+RewriteCond %{HTTP_HOST} ^www\. [NC]
+RewriteRule ^ https://budget.tomasz-kedziorek.profesjonalnyprogramista.pl%{REQUEST_URI} [L,NE,R=301]
+
 

@@ -37,7 +37,7 @@ class Config
    * Show or hide error messages on screen
    * @var boolean
    */
-  const SHOW_ERRORS = true;
+  const SHOW_ERRORS = false;
 
   //Secret key for hashing np ze strony https://randomkeygen.com/
   const SECRET_KEY = 'J8e22o1sR1FTD7QExPJjTEDJI56kCaiw';

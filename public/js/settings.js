@@ -9,3 +9,47 @@ $("button.deleteModal").on("click", function () {
   const deleteButtonID = $(this).attr('id');
   $("input[id=delete-" + deleteButtonID + "][name=processedCategoryDelete]").prop('disabled', false).prop('checked', true);
 });
+
+
+const cxpenseCategoriesTab = document.querySelector("#expense-categories-tab");
+const incomeCategoriesTab = document.querySelector("#income-categories-tab");
+const paymentMethodsTab = document.querySelector("#payment-methods-tab");
+
+
+const hideLimitLabel = () => {
+  document.querySelector("#set-limit-label").classList.add("d-none");
+}
+const showLimitLabel = () => {
+  document.querySelector("#set-limit-label").classList.remove("d-none");
+}
+
+$("button.deleteLimit").on("click", function () {
+  const deleteButtonID = $(this).attr('id');
+  console.log(deleteButtonID);
+  $("input[id=" + deleteButtonID + "]").prop('disabled', false).prop('checked', true);
+});
+
+
+function currentDate() {
+  let today = new Date();
+  let dd = String(today.getDate()).padStart(2, '0');
+  let mm = String(today.getMonth() + 1).padStart(2, '0');
+  let yyyy = today.getFullYear();
+  today = yyyy + '-' + mm + '-' + dd;
+  return today;
+}
+function setCurrentDate(dateInput) {
+  dateInput.value = currentDate();
+}
+
+const limitDateInputs = document.querySelectorAll('.addLimitDate');
+limitDateInputs.forEach(limitDate => {
+  if (limitDate.value == '') {
+    setCurrentDate(limitDate);
+  }
+});
+
+
+incomeCategoriesTab.addEventListener('click', hideLimitLabel);
+paymentMethodsTab.addEventListener('click', hideLimitLabel);
+cxpenseCategoriesTab.addEventListener('click', showLimitLabel);
