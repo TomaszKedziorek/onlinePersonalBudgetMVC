@@ -49,7 +49,15 @@ limitDateInputs.forEach(limitDate => {
   }
 });
 
-
+const categoryIDRadio = document.querySelectorAll(".category-ID-if-limit-is-set");
+function changeColorIfLimitIsSet() {
+  categoryIDRadio.forEach(cat => {
+    limitBtnID = cat.getAttribute('id').replace('category-ID-if-limit-is-set-', 'expenseCategory');
+    document.querySelector('.limit#' + limitBtnID).classList.add('text-primary')
+  });
+}
+//expenseCategory{{ category.id }}
+window.addEventListener('load', changeColorIfLimitIsSet);
 incomeCategoriesTab.addEventListener('click', hideLimitLabel);
 paymentMethodsTab.addEventListener('click', hideLimitLabel);
 cxpenseCategoriesTab.addEventListener('click', showLimitLabel);

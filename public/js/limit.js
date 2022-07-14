@@ -104,12 +104,11 @@ function limitExceeded() {
   spanExceededMessage.innerText = '';
   if (left < 0 || expense < 0) {
     spanExceededMessage.innerText = ' The limit exceeded!';
-  } else {
-
   }
 }
 
 changeCategory.addEventListener("change", limit);
 changeDate.addEventListener("change", limit);
 changeAmount.addEventListener("keyup", toSpendWithCurrentExpense);
+changeAmount.addEventListener("change", toSpendWithCurrentExpense);
 window.addEventListener("load", limit);

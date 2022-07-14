@@ -188,7 +188,8 @@
                         <div class="col-3 p-0">
                           <input type="radio" class="d-none" name="limit_id" id="delete-limit-{{ limit.limit_id }}"
                             value="{{ limit.limit_id }}" checked>
-                          <input type="radio" class="d-none" name="category_id" value="{{ category.id }}" checked>
+                          <input type="radio" class="d-none category-ID-if-limit-is-set" name="category_id"
+                            value="{{ category.id }}" id="category-ID-if-limit-is-set-{{ category.id }}" checked>
                           <input type="date" class="form-control" name="date_of_limit" value="{{ limit.date_of_limit }}"
                             required>
                         </div>
